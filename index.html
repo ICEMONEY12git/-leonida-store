@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LEONIDA STORE — Games with Mobile Money 🇬🇭</title>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'Share Tech Mono', monospace; color: #fff; min-height: 100vh;
+    background: linear-gradient(180deg, #0d0221 0%, #2a0a4a 35%, #7b1fa2 60%, #ff3d81 85%, #ff9e3d 100%);
+    background-attachment: fixed;
+  }
+  h1, h2, h3 { font-family: 'Archivo Black', sans-serif; }
+  .neon-title {
+    background: linear-gradient(180deg, #fdfbff 20%, #b3e5fc 45%, #ff5e9d 75%);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+    text-shadow: 0 0 40px rgba(255,94,157,.5);
+  }
+  /* NAV */
+  nav {
+    position: sticky; top: 0; z-index: 50; display: flex; gap: .4rem; align-items: center;
+    padding: .7rem 1rem; flex-wrap: wrap;
+    background: rgba(13,2,33,.75); backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(255,94,157,.4);
+  }
+  .logo { font-family: 'Archivo Black'; font-size: 1.1rem; margin-right: auto; color: #7ef9ff; text-shadow: 0 0 12px #7ef9ff; }
+  .tab-btn {
+    background: transparent; border: 1px solid rgba(255,94,157,.5); color: #ffb3d9;
+    font-family: inherit; font-size: .85rem; padding: .5rem 1rem; border-radius: 99px; cursor: pointer;
+    letter-spacing: .1em; transition: .2s;
+  }
+  .tab-btn:hover { box-shadow: 0 0 12px rgba(255,94,157,.6); color: #fff; }
+  .tab-btn.active { background: #ff5e9d; color: #0d0221; font-weight: bold; box-shadow: 0 0 18px rgba(255,94,157,.8); }
+  #cartBtn { position: relative; }
+  #cartCount {
+    position: absolute; top: -7px; right: -7px; background: #7ef9ff; color: #0d0221;
+    border-radius: 99px; font-size: .7rem; padding: 1px 6px; font-weight: bold; display: none;
+  }
+  /* LAYOUT */
+  main { max-width: 1100px; margin: 0 auto; padding: 2rem 1rem 4rem; }
+  section.tab { display: none; animation: fade .3s; }
+  section.tab.active { display: block; }
+  @keyframes fade { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; } }
+  .center { text-align: center; }
+  /* COUNTDOWN */
+  .countdown { display: flex; gap: clamp(.5rem,2.5vw,1.5rem); justify-content: center; margin: 2rem 0 1rem; flex-wrap: wrap; }
+  .unit {
+    background: rgba(13,2,33,.55); border: 1px solid rgba(255,94,157,.6); border-radius: 12px;
+    padding: .9rem clamp(.7rem,2.5vw,1.8rem); min-width: 84px; backdrop-filter: blur(6px);
+    box-shadow: 0 0 25px rgba(255,94,157,.25);
+  }
+  .unit .num { font-size: clamp(1.5rem,6vw,3rem); color: #7ef9ff; text-shadow: 0 0 18px #7ef9ff; }
+  .unit .lbl { font-size: .65rem; letter-spacing: .3em; color: #ffb3d9; margin-top: .3rem; }
+  .date { color: #ffe9a8; letter-spacing: .2em; }
+  .progress-wrap { width: min(560px, 90%); margin: 1.4rem auto; }
+  .bar { height: 8px; border-radius: 99px; background: rgba(255,255,255,.15); overflow: hidden; }
+  .bar > div { height: 100%; width: 0; border-radius: 99px; background: linear-gradient(90deg,#7ef9ff,#ff5e9d); box-shadow: 0 0 12px #ff5e9d; transition: width 1s; }
+  .progress-wrap small { color: #c9b8ff; font-size: .72rem; display: block; margin-top: .4rem; text-align: center; }
+  /* BUTTONS */
+  .btn {
+    display: inline-block; text-decoration: none; border: none; cursor: pointer; font-family: inherit;
+    font-weight: bold; letter-spacing: .15em; border-radius: 99px; padding: .8rem 2rem; transition: .2s;
+  }
+  .btn-pink { background: #ff5e9d; color: #0d0221; box-shadow: 0 0 25px rgba(255,94,157,.7); }
+  .btn-pink:hover { transform: scale(1.05); }
+  .btn-cyan { background: transparent; border: 1px solid #7ef9ff; color: #7ef9ff; box-shadow: 0 0 15px rgba(126,249,255,.4); }
+  .btn-cyan:hover { background: rgba(126,249,255,.15); }
+  /* FILTER BAR */
+  .filters {
+    display: flex; gap: .6rem; flex-wrap: wrap; align-items: center;
+    background: rgba(13,2,33,.55); border: 1px solid rgba(255,94,157,.4);
+    border-radius: 14px; padding: 1rem; margin-bottom: 1.5rem; backdrop-filter: blur(6px);
+  }
+  .filters input[type=text], .filters select {
+    background: rgba(255,255,255,.08); border: 1px solid rgba(126,249,255,.4); color: #fff;
+    font-family: inherit; padding: .55rem .8rem; border-radius: 8px; outline: none; font-size: .85rem;
+  }
+  .filters input[type=text] { flex: 1; min-width: 150px; }
+  .pill {
+    background: transparent; border: 1px solid rgba(255,94,157,.5); color: #ffb3d9; cursor: pointer;
+    font-family: inherit; padding: .45rem .9rem; border-radius: 99px; font-size: .8rem;
+  }
+  .pill.active { background: #7ef9ff; color: #0d0221; border-color: #7ef9ff; font-weight: bold; }
+  .momo-note { font-size: .72rem; color: #ffd9ec; letter-spacing: .05em; }
+  /* GAME CARDS */
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 1.3rem; }
+  .card {
+    background: rgba(13,2,33,.6); border: 1px solid rgba(255,94,157,.45); border-radius: 16px;
+    overflow: hidden; backdrop-filter: blur(6px); transition: .25s; display: flex; flex-direction: column;
+  }
+  .card:hover { transform: translateY(-6px); box-shadow: 0 10px 35px rgba(255,94,157,.35); border-color: #ff5e9d; }
+  .cover { height: 150px; position: relative; display: flex; align-items: center; justify-content: center; font-size: 3.2rem; }
+  .cv-icon { z-index: 0; }
+  .cv-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 1; }
+  .cover .cv-title {
+    position: absolute; bottom: 8px; left: 10px; right: 10px; z-index: 2; font-family: 'Archivo Black';
+    font-size: .95rem; text-shadow: 0 2px 8px rgba(0,0,0,.8); line-height: 1.15;
+  }
+  .ribbon {
+    position: absolute; top: 10px; left: 10px; z-index: 2; font-size: .62rem; font-weight: bold;
+    letter-spacing: .15em; padding: 3px 9px; border-radius: 99px; background: #7ef9ff; color: #0d0221;
+  }
+  .ribbon.rel { background: #ff5e9d; color: #fff; }
+  .card-body { padding: .9rem 1rem 1.1rem; display: flex; flex-direction: column; gap: .55rem; flex: 1; }
+  .chips { display: flex; gap: .35rem; flex-wrap: wrap; }
+  .chip { font-size: .62rem; border: 1px solid rgba(126,249,255,.5); color: #b3e5fc; border-radius: 99px; padding: 2px 8px; }
+  .price { font-size: 1.25rem; color: #ffe9a8; text-shadow: 0 0 12px rgba(255,233,168,.6); }
+  .price small { color: #c9b8ff; font-size: .68rem; display: block; letter-spacing: .1em; }
+  .card .btn { padding: .55rem 1rem; font-size: .8rem; width: 100%; text-align: center; margin-top: auto; }
+  .empty { text-align: center; color: #ffb3d9; padding: 3rem 0; letter-spacing: .1em; }
+  /* GTA TAB / INFO */
+  .panel {
+    background: rgba(13,2,33,.55); border: 1px solid rgba(255,94,157,.4); border-radius: 16px;
+    padding: 1.4rem; backdrop-filter: blur(6px); margin-top: 1.5rem;
+  }
+  .panel h3 { color: #7ef9ff; margin-bottom: .7rem; letter-spacing: .1em; }
+  .info-grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(160px,1fr)); gap: .8rem; margin-top: 1rem; }
+  .info-grid .unit { min-width: 0; }
+  form.waitlist { display: flex; gap: .6rem; flex-wrap: wrap; margin-top: 1rem; }
+  form.waitlist input {
+    flex: 1; min-width: 200px; background: rgba(255,255,255,.08); border: 1px solid rgba(126,249,255,.4);
+    color: #fff; font-family: inherit; padding: .7rem 1rem; border-radius: 99px; outline: none;
+  }
+  /* CART */
+  .cart-item {
+    display: flex; align-items: center; gap: 1rem; background: rgba(13,2,33,.55);
+    border: 1px solid rgba(255,94,157,.4); border-radius: 12px; padding: .8rem 1rem; margin-bottom: .7rem;
+  }
+  .cart-thumb { width: 52px; height: 52px; border-radius: 10px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; overflow: hidden; }
+  .cart-thumb img { width: 100%; height: 100%; object-fit: cover; border-radius: 10px; }
+  .cart-item .t { flex: 1; }
+  .cart-item .p { color: #ffe9a8; }
+  .rm { background: none; border: 1px solid rgba(255,94,157,.6); color: #ff5e9d; border-radius: 8px; cursor: pointer; padding: .3rem .6rem; font-family: inherit; }
+  .total-row { display: flex; justify-content: space-between; align-items: center; margin: 1.2rem 0; font-size: 1.3rem; }
+  .sec-title { letter-spacing: .15em; margin-bottom: 1.2rem; color: #ffb3d9; font-size: .9rem; }
+  footer { text-align: center; padding: 2rem 1rem; color: #c9b8ff; font-size: .75rem; border-top: 1px solid rgba(255,94,157,.3); }
+  @media (max-width: 600px) { .grid { grid-template-columns: repeat(auto-fill, minmax(160px,1fr)); } .cover { height: 120px; } }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">🌴 LEONIDA STORE</div>
+  <button class="tab-btn active" data-tab="home">HOME</button>
+  <button class="tab-btn" data-tab="gta">GTA VI</button>
+  <button class="tab-btn" data-tab="games">ALL GAMES</button>
+  <button class="tab-btn" id="cartBtn" data-tab="cart">🛒 CART<span id="cartCount">0</span></button>
+</nav>
+
+<main>
+  <!-- ============ HOME ============ -->
+  <section class="tab active" id="tab-home">
+    <div class="center">
+      <h1 class="neon-title" style="font-size:clamp(2.4rem,8vw,5.5rem)">GTA&nbsp;VI</h1>
+      <div class="momo-note" style="letter-spacing:.5em;color:#ffd9ec">VICE CITY &middot; LEONIDA</div>
+    </div>
+    <div class="countdown">
+      <div class="unit"><div class="num cd" data-u="d">--</div><div class="lbl">DAYS</div></div>
+      <div class="unit"><div class="num cd" data-u="h">--</div><div class="lbl">HOURS</div></div>
+      <div class="unit"><div class="num cd" data-u="m">--</div><div class="lbl">MINUTES</div></div>
+      <div class="unit"><div class="num cd" data-u="s">--</div><div class="lbl">SECONDS</div></div>
+    </div>
+    <div class="center date">11 . 19 . 2026</div>
+    <div class="progress-wrap">
+      <div class="bar"><div id="fill"></div></div>
+      <small id="pct">since Trailer 1 — Dec 4, 2023</small>
+    </div>
+    <div class="center">
+      <a class="btn btn-pink" href="https://www.youtube.com/watch?v=QdBZY2fkU-0" target="_blank">▶ WATCH TRAILER</a>
+      <button class="btn btn-cyan" onclick="switchTab('games')">🎮 SHOP ALL GAMES</button>
+      <p class="momo-note" style="margin-top:1.2rem">🔒 Pay with MTN MoMo &middot; Telecel Cash &middot; AirtelTigo — no Visa card needed</p>
+    </div>
+    <h2 class="neon-title" style="font-size:1.4rem;margin:3rem 0 1.2rem">🔥 FEATURED</h2>
+    <div class="grid" id="featured"></div>
+  </section>
+
+  <!-- ============ GTA VI ============ -->
+  <section class="tab" id="tab-gta">
+    <div class="center">
+      <h1 class="neon-title" style="font-size:clamp(2rem,7vw,4.5rem)">GTA&nbsp;VI</h1>
+      <div class="momo-note" style="letter-spacing:.4em">RETURN TO VICE CITY</div>
+    </div>
+    <div class="countdown">
+      <div class="unit"><div class="num cd" data-u="d">--</div><div class="lbl">DAYS</div></div>
+      <div class="unit"><div class="num cd" data-u="h">--</div><div class="lbl">HOURS</div></div>
+      <div class="unit"><div class="num cd" data-u="m">--</div><div class="lbl">MINUTES</div></div>
+      <div class="unit"><div class="num cd" data-u="s">--</div><div class="lbl">SECONDS</div></div>
+    </div>
+    <div class="info-grid">
+      <div class="unit center"><div class="num" style="color:#ffe9a8">19 NOV</div><div class="lbl">RELEASE DATE</div></div>
+      <div class="unit center"><div class="num" style="color:#ffe9a8">PS5 / XBOX</div><div class="lbl">PLATFORMS</div></div>
+      <div class="unit center"><div class="num" style="color:#ffe9a8">LEONIDA</div><div class="lbl">SETTING</div></div>
+    </div>
+    <div class="panel">
+      <h3>⏳ PRE-ORDER WAITLIST</h3>
+      <p style="color:#c9b8ff;font-size:.85rem">GTA VI pre-orders open once publishers authorize us. Drop your email and we'll ping you the moment keys land — at Ghana prices, payable with MoMo.</p>
+      <form class="waitlist" onsubmit="return joinWaitlist(event)">
+        <input type="email" placeholder="your@email.com" required id="waitEmail">
+        <button class="btn btn-pink" type="submit">NOTIFY ME</button>
+      </form>
+      <p id="waitMsg" style="color:#7ef9ff;margin-top:.8rem;display:none">✅ You're on the list. See you in Vice City.</p>
+    </div>
+    <div class="center" style="margin-top:1.5rem">
+      <a class="btn btn-cyan" href="https://www.youtube.com/watch?v=QdBZY2fkU-0" target="_blank">▶ TRAILER 1</a>
+      <a class="btn btn-cyan" href="https://www.youtube.com/watch?v=VQRLujxTm3c" target="_blank">▶ TRAILER 2</a>
+    </div>
+  </section>
+
+  <!-- ============ ALL GAMES ============ -->
+  <section class="tab" id="tab-games">
+    <h2 class="neon-title" style="font-size:1.8rem;margin-bottom:1.2rem">🎮 ALL GAMES</h2>
+    <div class="filters">
+      <input type="text" id="fSearch" placeholder="🔍 Search games…" oninput="renderGames()">
+      <button class="pill active" data-st="all" onclick="setStatus(this)">ALL</button>
+      <button class="pill" data-st="released" onclick="setStatus(this)">OUT NOW</button>
+      <button class="pill" data-st="upcoming" onclick="setStatus(this)">UPCOMING</button>
+      <select id="fPlatform" onchange="renderGames()">
+        <option value="all">All platforms</option><option>PC</option><option>PS5</option><option>Xbox</option>
+      </select>
+      <select id="fSort" onchange="renderGames()">
+        <option value="pop">Sort: Popular</option>
+        <option value="plo">Price: Low → High</option>
+        <option value="phi">Price: High → Low</option>
+        <option value="new">Release: Newest</option>
+      </select>
+      <span class="momo-note">✅ Pay with MoMo</span>
+    </div>
+    <div class="grid" id="gamesGrid"></div>
+    <div class="empty" id="emptyMsg" style="display:none">NO GAMES MATCH 😅 <br><br><button class="btn btn-cyan" onclick="clearFilters()">CLEAR FILTERS</button></div>
+  </section>
+
+  <!-- ============ CART ============ -->
+  <section class="tab" id="tab-cart">
+    <h2 class="neon-title" style="font-size:1.8rem;margin-bottom:1.2rem">🛒 YOUR CART</h2>
+    <div id="cartItems"></div>
+    <div class="empty" id="cartEmpty" style="display:none">YOUR CART IS EMPTY 🛒<br><br><button class="btn btn-pink" onclick="switchTab('games')">BROWSE GAMES</button></div>
+    <div id="cartSummary" style="display:none">
+      <div class="total-row"><span>TOTAL</span><span class="price" id="cartTotal">₵0</span></div>
+      <input type="email" id="buyerEmail" placeholder="your@email.com" required
+        style="width:100%;padding:.8rem 1rem;border-radius:99px;border:1px solid rgba(126,249,255,.4);background:rgba(255,255,255,.08);color:#fff;font-family:inherit;outline:none;margin-bottom:.8rem">
+      <button class="btn btn-pink" style="width:100%;font-size:1rem" onclick="checkout()">📱 PAY WITH MOBILE MONEY</button>
+      <p class="momo-note center" style="margin-top:.8rem">🔒 Secured by Paystack — MTN MoMo &middot; Telecel Cash &middot; AirtelTigo<br>Game key delivered instantly after payment.</p>
+    </div>
+  </section>
+</main>
+
+<footer>LEONIDA STORE · Built for Ghana 🇬🇭 · Test mode — no real money moves · Not affiliated with Rockstar Games</footer>
+
+<script src="https://js.paystack.co/v2/inline.js"></script>
+<script>
+/* ================== DATA (edit prices in GHS here) ================== */
+const GAMES = [
+  { id:'gta6',  title:'Grand Theft Auto VI',      icon:'🌴', status:'upcoming', release:'2026-11-19', platforms:['PS5','Xbox'], genre:'Action',   price:null, grad:['#ff5e9d','#ff9e3d'], cover:'https://i.ytimg.com/vi/QdBZY2fkU-0/maxresdefault.jpg', featured:true },
+  { id:'fc26',  title:'EA SPORTS FC 26',          icon:'⚽', status:'released', release:'2025-09-26', platforms:['PC','PS5','Xbox'], genre:'Sports',    price:420, grad:['#00e676','#00b0ff'], cover:'https://cdn.cloudflare.steamstatic.com/steam/apps/3405690/library_600x900.jpg', featured:true },
+  { id:'bo7',   title:'Call of Duty: Black Ops 7',icon:'🎯', status:'released', release:'2025-11-14', platforms:['PC','PS5','Xbox'], genre:'Action',    price:520, grad:['#ff1744','#4a148c'], cover:'https://cdn.cloudflare.steamstatic.com/steam/apps/3606480/library_600x900.jpg', featured:true },
+  { id:'fc25',  title:'EA SPORTS FC 25',          icon:'⚽', status:'released', release:'2024-09-27', platforms:['PC','PS5','Xbox'], genre:'Sports',    price:280, grad:['#00c853','#2962ff'], cover:'https://cdn.cloudflare.steamstatic.com/steam/apps/2669320/library_600x900.jpg' },
+  { id:'fc24',  title:'EA SPORTS FC 24',          icon:'⚽', status:'released', release:'2023-09-29', platforms:['PC','PS5','Xbox'], genre:'Sports',    price:180, grad:['#1de9b6','#3949ab'], cover:'https://cdn.cloudflare.steamstatic.com/steam/apps/2195250/library_600x900.jpg' },
+  { id:'sm2',   title:"Marvel's Spider-Man 2",    icon:'🕷', status:'released', release:'2025-01-30', platforms:['PC','PS5'],        genre:'Action',    price:380, grad:['#ff1744','#2962ff'], cover:'https://cdn.cloudflare.steamstatic.com/steam/apps/2651280/library_600x900.jpg' },
+  { id:'er',    title:'Elden Ring Nightreign',    icon:'🗡', status:'released', release:'2025-05-30', platforms:['PC','PS5','Xbox'], genre:'Adventure', price:310, grad:['#3d5afe','#7ef9ff'], cover:'https://cdn.cloudflare.steamstatic.com/steam/apps/2622380/library_600x900.jpg' },
+  { id:'rdr2',  title:'Red Dead Redemption 2',    icon:'🤠', status:'released', release:'2018-10-26', platforms:['PC','PS5','Xbox'], genre:'Adventure', price:200, grad:['#ff6d00','#bf360c'], cover:'https://cdn.cloudflare.steamstatic.com/steam/apps/1174180/library_600x900.jpg' },
+  { id:'hog',   title:'Hogwarts Legacy',          icon:'🪄', status:'released', release:'2023-02-10', platforms:['PC','PS5','Xbox'], genre:'Adventure', price:220, grad:['#7b1fa2','#ffd54f'], cover:'https://cdn.cloudflare.steamstatic.com/steam/apps/990080/library_600x900.jpg' },
+];
+
+/* ================== PAYSTACK (TEST MODE) ==================
+   Dashboard → Settings → API Keys & Webhooks → copy pk_test_... */
+const PAYSTACK_PUBLIC_KEY = 'pk_test_PASTE_YOURS_HERE';
+
+function checkout() {
+  if (PAYSTACK_PUBLIC_KEY.includes('PASTE')) {
+    alert('Add your Paystack test key first!\n\nDashboard → Settings → API Keys & Webhooks → copy pk_test_... → paste into PAYSTACK_PUBLIC_KEY in the code.');
+    return;
+  }
+  const email = document.getElementById('buyerEmail').value.trim();
+  if (!email || !email.includes('@')) { alert('Enter your email first 📧'); return; }
+  if (!cart.length) return;
+
+  const items = cart.map(id => GAMES.find(g => g.id === id));
+  const totalPesewas = items.reduce((s, g) => s + g.price, 0) * 100; // GHS → pesewas
+  const ref = 'LS-' + Date.now() + '-' + Math.random().toString(36).slice(2, 7).toUpperCase();
+
+  const popup = new PaystackPop();
+  popup.newTransaction({
+    key: PAYSTACK_PUBLIC_KEY,
+    email: email,
+    amount: totalPesewas,
+    currency: 'GHS',
+    reference: ref,
+    onSuccess: (t) => {
+      // DEMO delivery — real key delivery happens via webhook + Supabase later
+      localStorage.setItem('lastOrder', JSON.stringify({ ref, email, items, paidAt: new Date().toISOString() }));
+      cart = []; saveCart();
+      switchTab('cart');
+      document.getElementById('cartItems').innerHTML = `
+        <div class="panel" style="text-align:center;border-color:#7ef9ff">
+          <h3>✅ PAYMENT SUCCESSFUL</h3>
+          <p style="color:#ffe9a8;font-size:1.1rem">Ref: ${t.reference}</p>
+          <p style="color:#c9b8ff;font-size:.85rem;margin-top:.5rem">In the live version, your Steam keys are emailed instantly after server verification.<br>(This demo just simulates delivery.)</p>
+        </div>`;
+    },
+    onCancel: () => alert('Payment cancelled — your cart is safe 🛒'),
+  });
+}
+
+/* ================== TABS ================== */
+function switchTab(name) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === name));
+  document.querySelectorAll('section.tab').forEach(s => s.classList.toggle('active', s.id === 'tab-' + name));
+  window.scrollTo({ top: 0 });
+}
+document.querySelectorAll('.tab-btn').forEach(b => b.onclick = () => switchTab(b.dataset.tab));
+
+/* ================== COUNTDOWN (Home + GTA tab) ================== */
+const LAUNCH = new Date('2026-11-19T00:00:00-05:00');
+const T1 = new Date('2023-12-04T00:00:00-05:00');
+function tick() {
+  const diff = LAUNCH - new Date();
+  if (diff <= 0) return;
+  const v = { d: Math.floor(diff/864e5), h: Math.floor(diff%864e5/36e5), m: Math.floor(diff%36e5/6e4), s: Math.floor(diff%6e4/1e3) };
+  document.querySelectorAll('.cd').forEach(el => el.textContent = String(v[el.dataset.u]).padStart(2,'0'));
+  const p = Math.min(100, (Date.now() - T1) / (LAUNCH - T1) * 100);
+  document.getElementById('fill').style.width = p + '%';
+  document.getElementById('pct').textContent = p.toFixed(2) + '% — time since Trailer 1 (Dec 4, 2023)';
+}
+tick(); setInterval(tick, 1000);
+
+/* ================== CARDS ================== */
+function cardHTML(g) {
+  const rib = g.status === 'upcoming' ? '<div class="ribbon">PRE-ORDER</div>' : '<div class="ribbon rel">OUT NOW</div>';
+  const price = g.status === 'upcoming'
+    ? '<div class="price">TBA<small>PRE-ORDER SOON</small></div>'
+    : `<div class="price">₵${g.price}<small>KEY · INSTANT DELIVERY</small></div>`;
+  const btn = g.status === 'upcoming'
+    ? `<button class="btn btn-cyan" onclick="notify('${g.id}',this)">🔔 NOTIFY ME</button>`
+    : `<button class="btn btn-pink" onclick="addToCart('${g.id}',this)">ADD TO CART</button>`;
+  const chips = g.platforms.map(p => `<span class="chip">${p}</span>`).join('');
+  const img = g.cover ? `<img class="cv-img" src="${g.cover}" alt="${g.title}" loading="lazy" onerror="this.remove()">` : '';
+  return `<div class="card">
+    <div class="cover" style="background:linear-gradient(135deg,${g.grad[0]},${g.grad[1]})"><span class="cv-icon">${g.icon}</span>${img}${rib}<div class="cv-title">${g.title}</div></div>
+    <div class="card-body"><div class="chips">${chips}<span class="chip">${g.genre}</span></div>${price}${btn}</div></div>`;
+}
+
+/* ================== FILTERS ================== */
+let statusFilter = 'all';
+function setStatus(el) {
+  statusFilter = el.dataset.st;
+  document.querySelectorAll('.pill').forEach(p => p.classList.toggle('active', p === el));
+  renderGames();
+}
+function renderGames() {
+  const q = document.getElementById('fSearch').value.toLowerCase();
+  const plat = document.getElementById('fPlatform').value;
+  const sort = document.getElementById('fSort').value;
+  let list = GAMES.filter(g =>
+    (statusFilter === 'all' || g.status === statusFilter) &&
+    (plat === 'all' || g.platforms.includes(plat)) &&
+    g.title.toLowerCase().includes(q)
+  );
+  if (sort === 'plo') list = [...list].sort((a,b) => (a.price ?? 1e9) - (b.price ?? 1e9));
+  if (sort === 'phi') list = [...list].sort((a,b) => (b.price ?? 0) - (a.price ?? 0));
+  if (sort === 'new') list = [...list].sort((a,b) => new Date(b.release) - new Date(a.release));
+  document.getElementById('gamesGrid').innerHTML = list.map(cardHTML).join('');
+  document.getElementById('emptyMsg').style.display = list.length ? 'none' : 'block';
+}
+function clearFilters() {
+  document.getElementById('fSearch').value = '';
+  document.getElementById('fPlatform').value = 'all';
+  document.getElementById('fSort').value = 'pop';
+  statusFilter = 'all';
+  document.querySelectorAll('.pill').forEach(p => p.classList.toggle('active', p.dataset.st === 'all'));
+  renderGames();
+}
+document.getElementById('featured').innerHTML = GAMES.filter(g => g.featured).map(cardHTML).join('');
+renderGames();
+
+/* ================== CART ================== */
+let cart = JSON.parse(localStorage.getItem('cart') || '[]');
+function saveCart() { localStorage.setItem('cart', JSON.stringify(cart)); renderCart(); }
+function addToCart(id, btn) {
+  if (cart.includes(id)) { btn.textContent = '✓ IN CART'; return; }
+  cart.push(id); saveCart();
+  btn.textContent = '✓ ADDED';
+  setTimeout(() => btn.textContent = 'ADD TO CART', 1200);
+}
+function removeFromCart(id) { cart = cart.filter(x => x !== id); saveCart(); }
+function renderCart() {
+  const items = cart.map(id => GAMES.find(g => g.id === id));
+  const box = document.getElementById('cartItems');
+  document.getElementById('cartEmpty').style.display = items.length ? 'none' : 'block';
+  document.getElementById('cartSummary').style.display = items.length ? 'block' : 'none';
+  const badge = document.getElementById('cartCount');
+  badge.style.display = cart.length ? 'block' : 'none';
+  badge.textContent = cart.length;
+  box.innerHTML = items.map(g => `
+    <div class="cart-item">
+      <div class="cart-thumb" style="background:linear-gradient(135deg,${g.grad[0]},${g.grad[1]})">${g.cover ? `<img src="${g.cover}" alt="">` : g.icon}</div>
+      <div class="t">${g.title}<br><small style="color:#7ef9ff">STEAM KEY · PC</small></div>
+      <div class="p">₵${g.price}</div>
+      <button class="rm" onclick="removeFromCart('${g.id}')">✕</button>
+    </div>`).join('');
+  document.getElementById('cartTotal').textContent = '₵' + items.reduce((s,g) => s + g.price, 0);
+}
+renderCart();
+
+/* ================== NOTIFY / WAITLIST (frontend-only for now) ================== */
+function notify(id, btn) {
+  const set = JSON.parse(localStorage.getItem('notify') || '[]');
+  if (!set.includes(id)) set.push(id);
+  localStorage.setItem('notify', JSON.stringify(set));
+  btn.textContent = '✓ WE\'LL EMAIL YOU';
+  btn.disabled = true;
+}
+function joinWaitlist(e) {
+  e.preventDefault();
+  localStorage.setItem('waitlist', document.getElementById('waitEmail').value);
+  document.getElementById('waitMsg').style.display = 'block';
+  return false;
+}
+</script>
+</body>
+</html>
